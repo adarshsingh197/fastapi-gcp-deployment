@@ -1,0 +1,19 @@
+# Python virtual environments and installed packages
+.venv/
+venv/
+env/
+
+# Python bytecode and cache directories
+__pycache__/
+.pycache/
+*.py[cod]
+*$py.class
+
+# Local environment and tool files
+.env
+.env.*
+!.env.example
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.DS_Store

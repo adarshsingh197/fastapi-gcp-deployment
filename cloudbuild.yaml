@@ -1,0 +1,35 @@
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -t
+      - asia-south1-docker.pkg.dev/$PROJECT_ID/fastapi-repo/fastapi-app:$BUILD_ID
+      - .
+
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - asia-south1-docker.pkg.dev/$PROJECT_ID/fastapi-repo/fastapi-app:$BUILD_ID
+
+  - name: gcr.io/google.com/cloudsdktool/google-cloud-cli:stable
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        deploy_args=(
+          run deploy fastapi-service
+          --image=asia-south1-docker.pkg.dev/$PROJECT_ID/fastapi-repo/fastapi-app:$BUILD_ID
+          --region=asia-south1
+          --platform=managed
+          --quiet
+        )
+        if [[ "${_ALLOW_UNAUTHENTICATED,,}" == "true" ]]; then
+          deploy_args+=(--allow-unauthenticated)
+        fi
+        gcloud "${deploy_args[@]}"
+
+images:
+  - asia-south1-docker.pkg.dev/$PROJECT_ID/fastapi-repo/fastapi-app:$BUILD_ID
+
+substitutions:
+  _ALLOW_UNAUTHENTICATED: "false"
